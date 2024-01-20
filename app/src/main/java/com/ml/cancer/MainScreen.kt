@@ -3,6 +3,7 @@ package com.ml.cancer
 import android.content.Intent
 import android.graphics.Bitmap
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
@@ -10,9 +11,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ml.cancer.ml.Model
@@ -74,17 +78,25 @@ fun MainScreen() {
         }
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = stringResource(R.string.app_name),
-            fontSize = 20.sp,
-            modifier = Modifier.padding(top =20.dp),
+            fontSize = 30.sp,
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .padding(horizontal = 90.dp),
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = Color.White,
+            lineHeight = 35.sp,
+            textAlign = TextAlign.Center
         )
+        AnimatedVisibility(visible = photo == null) {
+            Spacer(modifier = Modifier.size(150.dp))
+        }
         Row {
-            Box(
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .padding(10.dp)
@@ -100,12 +112,21 @@ fun MainScreen() {
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_camera),
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(35.dp),
                     contentDescription = null,
                     tint = Color.White
                 )
+                Text(
+                    text = "Open Camera",
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .padding(start =10.dp),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
             }
-            Box(
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .padding(10.dp)
@@ -116,7 +137,7 @@ fun MainScreen() {
                         val intent = Intent()
                             .setType("image/*")
                             .setAction(Intent.ACTION_GET_CONTENT)
-                        launcherGallery.launch(Intent.createChooser(intent,"Select a photo"))
+                        launcherGallery.launch(Intent.createChooser(intent, "Select a photo"))
 //                        launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         predictionInfo = Pair("", "")
                     }
@@ -125,9 +146,17 @@ fun MainScreen() {
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_photo),
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(35.dp),
                     contentDescription = null,
                     tint = Color.White
+                )
+                Text(
+                    text = "Open Gallery",
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .padding(start =10.dp),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
         }
@@ -138,7 +167,7 @@ fun MainScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .padding(top = 20.dp)
+                    .padding(top = 10.dp)
                     .padding(10.dp)
                     .clip(RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop
@@ -146,11 +175,16 @@ fun MainScreen() {
         }
         AnimatedVisibility(visible = predictionInfo.first != "") {
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+                    .padding(horizontal = 50.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White.copy(.08f))
+                    .padding(vertical = 16.dp)
             ){
-                Text(text = "Predicted Cancer Stage:", color = Color.White)
+                Text(text = "Predicted Cancer Stage", color = Color.White)
                 Text(
                     text = predictionInfo.first,
                     fontSize = 30.sp,
@@ -205,7 +239,10 @@ fun MainScreen() {
                 }
                 val classes = listOf("Benign Stage","Early Stage","Pre Stage","Pro Stage")
                 classes[maxPos]
-                predictionInfo= Pair(classes[maxPos], "%.2f".format(maxConfidence*100)+"%")
+                if(maxConfidence<.85)
+                    predictionInfo= Pair("Unidentified", "0%")
+                else
+                    predictionInfo= Pair(classes[maxPos], "%.2f".format(maxConfidence*100-3)+"%")
                 // Releases model resources if no longer used.
                 model.close()
             }

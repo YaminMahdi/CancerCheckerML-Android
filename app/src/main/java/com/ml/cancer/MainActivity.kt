@@ -24,10 +24,10 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = "splash_screen"
+                        startDestination = "start_screen"
                     ) {
-                        composable("splash_screen") {
-                            SplashScreen(navController)
+                        composable("start_screen") {
+                            StartScreen(navController)
                         }
                         composable("home"){
                             MainScreen()
