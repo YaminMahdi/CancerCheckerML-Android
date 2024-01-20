@@ -72,8 +72,6 @@ fun MainScreen() {
             MainScope().launch(Dispatchers.IO) {
                 photo = it.data?.data?.toBitmap(context)?.asImageBitmap()
                 bitmap = it.data?.data?.toBitmap(context)
-//                bitmap = it?.toBitmap(context)
-//                photo = it?.toBitmap(context)?.asImageBitmap()
             }
         }
 
@@ -138,7 +136,6 @@ fun MainScreen() {
                             .setType("image/*")
                             .setAction(Intent.ACTION_GET_CONTENT)
                         launcherGallery.launch(Intent.createChooser(intent, "Select a photo"))
-//                        launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         predictionInfo = Pair("", "")
                     }
                     .padding(20.dp)
@@ -213,8 +210,6 @@ fun MainScreen() {
                 val intValues = IntArray(244 * 244)
                 image.getPixels(intValues, 0, image.width, 0, 0, image.width, image.height)
                 var pixel = 0
-                //iterate over each pixel and extract R, G, and B values. Add those values individually to the byte buffer.
-                //iterate over each pixel and extract R, G, and B values. Add those values individually to the byte buffer.
                 for (i in 0 until 244) {
                     for (j in 0 until 244) {
                         val `val` = intValues[pixel++] // RGB
@@ -225,7 +220,6 @@ fun MainScreen() {
                 }
                 inputFeature0.loadBuffer(byteBuffer)
 
-                // Runs model inference and gets result.
                 val outputs = model.process(inputFeature0)
                 val outputFeature0 = outputs.outputFeature0AsTensorBuffer
                 var maxPos = 0
@@ -243,7 +237,6 @@ fun MainScreen() {
                     predictionInfo= Pair("Unidentified", "0%")
                 else
                     predictionInfo= Pair(classes[maxPos], "%.2f".format(maxConfidence*100-3)+"%")
-                // Releases model resources if no longer used.
                 model.close()
             }
         }
